@@ -1,0 +1,11 @@
+Starting audit...
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/jucatori/Wizard.java:123:12: Redundant 'final' modifier. [RedundantModifier]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Constants.java:3:1: Utility classes should not have a public or default constructor. [HideUtilityClassConstructor]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/GameInput.java:36:5: Class 'GameInput' looks like designed for extension (can be subclassed), but the method 'getGameAngels' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GameInput' final or making the method 'getGameAngels' static/final/abstract/empty, or adding allowed annotation for the method. [DesignForExtension]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Main.java:28:1: Utility classes should not have a public or default constructor. [HideUtilityClassConstructor]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Main.java:29:5: Method length is 556 lines (max allowed is 150). [MethodLength]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Main.java:120: Line is longer than 100 characters (found 101). [LineLength]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Main.java:139: switch without "default" clause. [MissingSwitchDefault]
+[ERROR] /mnt/d/faculta/an2/POO/tema3/src/main/Main.java:509:72: Must have at least one statement. [EmptyBlock]
+Audit done.
+Checkstyle ends with 8 errors.

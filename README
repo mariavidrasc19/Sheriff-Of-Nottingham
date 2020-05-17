@@ -1,0 +1,137 @@
+Vidrasc Maria 324CA
+
+
+GAME League of OOP - etapa 2
+
+	- este un mini-proiect care încearca sa implementeze un joc de rol, 
+bazat pe o programare orientata pe obiecte.
+	- este desfasurat pe o platforma, pe M runde, in care un numar de N jucatori 
+se lupta intre ei. Platforma este un tip de matrice, in care fiecare element al matricei 
+se afla un anumit tip de teren: Land/Desert/Volcanic/Woods. De asemenea, jucatorii sunt de 
+4 tipuri: Wizard/Rogue/Knight/Pyromancer.
+	- la finalul bataliilor dintre jucatori apar ingerii. Acestia sunt 10 si sunt:
+DamageAngel/DarkAngel/Dracula/GoodBoy/LevelUpAngel/LifeGiver/SmallAngel/Spawner/TheDoomer/
+XPAngel.
+
+	Datele jocului sunt citite din fisiere de input cu ajutorul functiilor urmatoare:
+- gameInput() - o clasa care pastreaza datele despre jucatori, platforma de joc si mutarile lor.
+Clasa are urmatoarele componente de tip matrice: gamePlatform, gamePlayers, gameMoves.
+
+- gameInputLoader() - o clasa care citeste din fisierul de input valorile si le introduce in sttructura 
+gameInput().
+
+- main() -  realizeaza logica jocului in mai multi pasi:
+	- etapa 1: apeleaza gameInputLoader() cu parametrii din linia de comanda fisierele de intrare si
+de  iesire.
+	- etapa 2: preia gamePlatform citit din input si il transpune intr- o alta matrice care este formata
+din elemente de tip Grounds, o clasa enums care contine tipurile de terenuri pe care se lupta eroii.
+	- etapa 3: se creeaza o lista de jucatori folosindu se de datele din gamePlayers.
+	- epata 4: se creeaza o matrice de ingeri folosind gameAngels() in care numarul liniei reprezinta 
+numarul rundei.
+	- etapa 5: se preia fiecare linie din gameMoves(), reprezentand o runda, si realizeaza, conform 
+regulilor jocului, mutarile fiecarui jucator pe platforma jocului.
+	dupa fiecare runda de mutari, urmeaza runda de bataie. Pentru fiecare patratel unde se gasesc 2
+jucatori, se realizeaza batalia. Aici se va apela pe rand functia accept(), pe care o voi explica mai jos.
+	Tot aici, in cazul in care un jucator a reusit sa il invinga pe celalalt, primeste xp-ul si i se
+actualizeaza nivelul si Hp-ul, daca este cazul.
+	- etapa 7: Dupa lupte, apar ingerii. Se ia la fiecare runda ingerii care urmeaza sa se spawneze acolo.
+Fiecare inger ia toti jucatorii din patratica in care s-a spawnat si le aplica abilitatea particulara.
+	Se printeaza apoi orice modificare efectuata starii jucatorilor.
+	- etapa 6: dupa ce se termina rundele - se printeaza jucatorii si informatiile despre ei conform cerintei.
+
+	De asemenea am implementat si Clasele urmatoare:
+
+- Players - aceasta este clasa parinte a subclaselor care definesc tipurile jucatorilor.
+Aceasta clasa contine functiile:
+	- Players(final int row, final int col, final Ground ground) - actualizeaza pozitia pe care se afla
+jucatorul.
+	- getter-i si setter-i pentru variabilele sale.
+	- accept(final Players player, final float maxHp, final float totalDamage) - functia care apeleaza
+urmatoarea functie folosind tehnica double dispatch
+	- interactWith(final Players player) - functie in care jucatorul dat ca parametru isi primeste 
+damage-ul de la adversar.
+
+
+- Wizard/Rogue/Knight/Pyromancer - subclase ale lui Players.
+				 - suprascriu metoda interactWith(final Players player) - in care, dupa
+tip, au in plus parametrii.
+				 - apeleaza, tot in interactWith(), tipurile de atacuri pe care le are fiecare 
+individual. 
+	Wizard:
+- drain(final Players player, final float maxHP)
+- deflect(final Players player, final float rivalDamage)
+	
+	Rogue:
+- backstab(final Players player)
+- paralysis(final Players player, final int number)
+	
+	Knight:
+- execute(final Players player)
+- slam(final Players player)
+
+	Pyromancer:
+- fireblast(final Players player)
+- ignite(final Players player)
+
+
+- Angels - aceasta este clasa parinte a subclaselor de ingeri.
+Aceasta clasa contine functiile:
+
+	- public Angels(final int positionInTheRow, final int positionInTheCol) - seteaza coordonatele ingerilor
+	- interactWith(final Players player) - aici aplica fiecare inger in parte abilitatea pe care o are
+
+DamageAngel/DarkAngel/Dracula/GoodBoy/LevelUpAngel/LifeGiver/SmallAngel/Spawner/TheDoomer/
+XPAngel
+	- aplica in interactWith metoda visitor: pt fiecare tip de player ingerul actioneaza diferit. 
+
+
+Double Dispatch:
+- permite o interactiune intre doua obiecte de tip diferit
+- in tema mea am aplicat aceasta tehnica intre eroii jocului, chiar daca toti sunt de acelasi tip, adica Players
+
+Mai intai am facut in Players un patern simplu universal de tipul accept - interactWith in care toti jucatorii 
+primeau acces la modificarea datelor jucatorului care a apelat in instanta junctia accept.
+
+Un exemplu de cum functioneaza double dispatch in programul meu:
+ 
+Avem player1 si player2 e eroi care au ajuns e acelasi teren si intra in lupta.
+Pe rand, cate un player apeleaza functia accept cu parametru celalalt player.
+ ex: player1.accept(player2);
+se apeleaza direct in Players aceasta functie.
+In clasa Players functia arata initial asa:
+    public void accept(final Players player, final float maxHp, final float totalDamage) {
+        player.interactWith(this);
+    }
+Aceasta functie insa nu mai apela interactWith din Players. Apela functia suprascrisa in Clasa player-ului care a 
+apelat-o.
+Mai departe, in fiecare clasa se in aceasta functie se calcula damage ul total aplicat pe jucatorul advers,
+folosidu-se fiecare de propriile functii de abilitati.
+
+Partea mai putin draguta a problemei vine cand la Wizard am creat o constructie ce necesita un al doilea si al treilea
+parametru in functia accept.
+Astfel ca in main am realizat 3 tipuri de batalii(3 cazuri):
+1 - player1 e wizard
+2 - player2 e wizard
+3 - nici un player nu e wizard
+
+In orice caz functia accept se apeleaza cu parametrii necesari lui wizard, dar in functia accept se apeleaza, 
+cu parametrii diferiti, functia interactWith.
+
+Functia accept finala:
+     public void accept(final Players player, final float maxHp, final float totalDamage) {
+        if (player instanceof Wizard) {
+            Wizard wPlayer = new Wizard(player);
+            wPlayer.interactWith(this, maxHp, totalDamage);
+            return;
+        }
+        player.interactWith(this);
+    }
+
+Functia de accept pt angels:
+    public final void accept(final Angels angel) {
+        angel.interactWith(this);
+    }
+
+
+
+
